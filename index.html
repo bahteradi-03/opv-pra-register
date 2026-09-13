@@ -373,6 +373,12 @@
     <div class="chart-card">
       <div class="chart-card-header">
         <h3 id="trendChartTitle">Tren Bulanan &mdash; PRA</h3>
+        <select class="chart-select" id="trendLiniSelect">
+          <option value="">Semua Lini</option>
+        </select>
+        <select class="chart-select" id="trendPicSelect">
+          <option value="">Semua PIC</option>
+        </select>
         <select class="chart-select" id="trendJenisSelect">
           <option value="PRA">PRA</option>
           <option value="OPVpr">OPVpr</option>
@@ -741,11 +747,38 @@
     },
   };
 
+  function renderTrendLiniOptions() {
+    var sel = document.getElementById("trendLiniSelect");
+    if (!sel) return;
+    var cur = sel.value;
+    var linis = Array.from(new Set(documents.map(function(d){ return (d.lini || "").trim(); }))).filter(Boolean).sort();
+    sel.innerHTML = '<option value="">Semua Lini</option>' +
+      linis.map(function(l){ return '<option value="' + l + '">' + l + '</option>'; }).join("");
+    if (linis.indexOf(cur) !== -1) sel.value = cur;
+  }
+
+  function renderTrendPicOptions() {
+    var sel = document.getElementById("trendPicSelect");
+    if (!sel) return;
+    var cur = sel.value;
+    var pics = Array.from(new Set(documents.map(function(d){ return (d.pic || "").trim(); }))).filter(Boolean).sort();
+    sel.innerHTML = '<option value="">Semua PIC</option>' +
+      pics.map(function(p){ return '<option value="' + p + '">' + p + '</option>'; }).join("");
+    if (pics.indexOf(cur) !== -1) sel.value = cur;
+  }
+
   function renderTrendChart() {
     var jenis = document.getElementById("trendJenisSelect").value;
-    document.getElementById("trendChartTitle").textContent = "Tren Bulanan \u2014 " + jenis;
+    var filterLini = document.getElementById("trendLiniSelect") ? document.getElementById("trendLiniSelect").value : "";
+    var filterPic = document.getElementById("trendPicSelect") ? document.getElementById("trendPicSelect").value : "";
+    document.getElementById("trendChartTitle").textContent = "Tren Bulanan — " + jenis;
 
-    var docsOfType = documents.filter(function (d) { return d.jenisDokumen === jenis; });
+    var docsOfType = documents.filter(function (d) {
+      if (d.jenisDokumen !== jenis) return false;
+      if (filterLini && (d.lini || "").trim() !== filterLini) return false;
+      if (filterPic && (d.pic || "").trim() !== filterPic) return false;
+      return true;
+    });
     var monthKeys = Array.from(new Set(docsOfType.map(function (d) { return getMonthKey(d.tanggal); })))
       .filter(function (k) { return k !== "tanpa-tanggal"; })
       .sort();
@@ -882,6 +915,8 @@
       if (w) w.innerHTML = '<div class="chart-empty">Grafik gagal dimuat (koneksi ke library grafik terputus)</div>';
       return;
     }
+    try { renderTrendLiniOptions(); } catch (e) { console.error("renderTrendLiniOptions error:", e); }
+    try { renderTrendPicOptions(); } catch (e) { console.error("renderTrendPicOptions error:", e); }
     try { renderTrendChart(); } catch (e) { console.error("renderTrendChart error:", e); }
     try { renderWorkloadChart(); } catch (e) { console.error("renderWorkloadChart error:", e); }
   }
@@ -1160,6 +1195,8 @@
     document.getElementById("jenisFilter").addEventListener("change", renderContent);
     document.getElementById("liniFilter").addEventListener("change", renderContent);
     document.getElementById("trendJenisSelect").addEventListener("change", renderTrendChart);
+    document.getElementById("trendLiniSelect").addEventListener("change", renderTrendChart);
+    document.getElementById("trendPicSelect").addEventListener("change", renderTrendChart);
     document.getElementById("monthFilter").addEventListener("change", function () {
       renderJenisSummary();
       renderContent();

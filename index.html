@@ -453,13 +453,20 @@
           </div>
           <div class="field">
             <label>Lini</label>
-            <input type="text" id="fLini" placeholder="Pilih / ketik lini" list="liniSuggestions" />
-            <datalist id="liniSuggestions">
-              <option value="Lini 1">
-              <option value="Lini 2">
-              <option value="Lini 3">
-              <option value="Lini 4">
-            </datalist>
+            <select id="fLini">
+              <option value="">-- Pilih Lini --</option>
+              <option value="Solida 1">Solida 1</option>
+              <option value="Solida 2">Solida 2</option>
+              <option value="Liquid">Liquid</option>
+              <option value="Semi-solid">Semi-solid</option>
+              <option value="Sterile 1">Sterile 1</option>
+              <option value="Steril 2">Steril 2</option>
+              <option value="Sterile 3">Sterile 3</option>
+              <option value="Sterile 4">Sterile 4</option>
+              <option value="Sterile 5">Sterile 5</option>
+              <option value="Sterile 2 Ext">Sterile 2 Ext</option>
+              <option value="Sterile 3 Ext">Sterile 3 Ext</option>
+            </select>
           </div>
         </div>
         <div class="field">
@@ -890,29 +897,25 @@
     if (keys.indexOf(current) !== -1) select.value = current;
   }
 
+  var LINI_OPTIONS = [
+    "Solida 1", "Solida 2", "Liquid", "Semi-solid",
+    "Sterile 1", "Steril 2", "Sterile 3", "Sterile 4", "Sterile 5",
+    "Sterile 2 Ext", "Sterile 3 Ext"
+  ];
+
   function renderLiniFilterOptions() {
     var select = document.getElementById("liniFilter");
     if (!select) return;
     var current = select.value;
-    var liniSet = new Set();
+    var list = LINI_OPTIONS.slice();
     documents.forEach(function (d) {
-      if (d.lini && d.lini.trim()) liniSet.add(d.lini.trim());
+      if (d.lini && d.lini.trim() && list.indexOf(d.lini.trim()) === -1) {
+        list.push(d.lini.trim());
+      }
     });
-    var keys = Array.from(liniSet).sort();
     select.innerHTML = '<option value="Semua">Semua Lini</option>' +
-      keys.map(function (k) { return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>'; }).join("");
-    if (keys.indexOf(current) !== -1) select.value = current;
-
-    var datalist = document.getElementById("liniSuggestions");
-    if (datalist) {
-      var defaultLinis = ["Lini 1", "Lini 2", "Lini 3", "Lini 4"];
-      keys.forEach(function (k) {
-        if (defaultLinis.indexOf(k) === -1) defaultLinis.push(k);
-      });
-      datalist.innerHTML = defaultLinis.map(function (l) {
-        return '<option value="' + escapeHtml(l) + '">';
-      }).join("");
-    }
+      list.map(function (k) { return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>'; }).join("");
+    if (list.indexOf(current) !== -1) select.value = current;
   }
 
   function statusSelectHtml(doc) {

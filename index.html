@@ -241,6 +241,38 @@
   #appContent { display: none; }
   .logout-btn { border: none; background: none; cursor: pointer; color: #94a3b8; padding: 6px; border-radius: 6px; display: inline-flex; margin-left: 10px; }
   .logout-btn:hover { background: #f1f5f9; color: var(--red); }
+
+  /* ---- Multi-Select Dropdown ---- */
+  .ms-wrap { position: relative; display: inline-block; }
+  .ms-trigger {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px;
+    border-radius: 8px; border: 1px solid #cbd5e1; background: #fff;
+    font-size: 14px; font-family: inherit; cursor: pointer; white-space: nowrap;
+    user-select: none; min-width: 110px;
+  }
+  .ms-trigger:hover { background: #f8fafc; }
+  .ms-trigger .ms-arrow { margin-left: auto; color: #64748b; font-size: 10px; }
+  .ms-trigger.active { border-color: var(--indigo); box-shadow: 0 0 0 2px rgba(79,70,229,0.15); }
+  .ms-panel {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 200;
+    background: #fff; border: 1px solid #cbd5e1; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 160px; max-height: 260px;
+    overflow-y: auto; padding: 6px 0;
+  }
+  .ms-panel.open { display: block; }
+  .ms-item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    font-size: 13px; cursor: pointer; color: #334155;
+  }
+  .ms-item:hover { background: #f1f5f9; }
+  .ms-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--indigo); cursor: pointer; flex-shrink: 0; }
+  .ms-divider { border: none; border-top: 1px solid #f1f5f9; margin: 4px 0; }
+  .ms-reset { font-size: 12px; color: var(--indigo); font-weight: 500; }
+
+  /* ---- Checkbox group in form ---- */
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0; }
+  .checkbox-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #334155; cursor: pointer; }
+  .checkbox-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--indigo); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -331,24 +363,40 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input type="text" id="searchInput" placeholder="Cari nomor dokumen, judul, PIC, atau lini..." />
     </div>
-    <select class="filter-select" id="statusFilter">
-      <option value="Semua">Semua Status</option>
-      <option value="Drafting">Drafting</option>
-      <option value="Approval">Approval</option>
-      <option value="Efektif">Efektif</option>
-    </select>
-    <select class="filter-select" id="jenisFilter">
-      <option value="Semua">Semua Jenis</option>
-      <option value="PRA">PRA</option>
-      <option value="OPVpr">OPVpr</option>
-      <option value="OPVrep">OPVrep</option>
-    </select>
-    <select class="filter-select" id="liniFilter">
-      <option value="Semua">Semua Lini</option>
-    </select>
-    <select class="filter-select" id="monthFilter">
-      <option value="Semua">Semua Bulan</option>
-    </select>
+    <div class="ms-wrap" id="statusFilter">
+      <div class="ms-trigger" id="statusFilterTrigger">Semua Status <span class="ms-arrow">&#9660;</span></div>
+      <div class="ms-panel" id="statusFilterPanel">
+        <label class="ms-item ms-reset"><input type="checkbox" value="__all__" checked> Semua Status</label>
+        <hr class="ms-divider">
+        <label class="ms-item"><input type="checkbox" value="Drafting"> Drafting</label>
+        <label class="ms-item"><input type="checkbox" value="Approval"> Approval</label>
+        <label class="ms-item"><input type="checkbox" value="Efektif"> Efektif</label>
+      </div>
+    </div>
+    <div class="ms-wrap" id="jenisFilter">
+      <div class="ms-trigger" id="jenisFilterTrigger">Semua Jenis <span class="ms-arrow">&#9660;</span></div>
+      <div class="ms-panel" id="jenisFilterPanel">
+        <label class="ms-item ms-reset"><input type="checkbox" value="__all__" checked> Semua Jenis</label>
+        <hr class="ms-divider">
+        <label class="ms-item"><input type="checkbox" value="PRA"> PRA</label>
+        <label class="ms-item"><input type="checkbox" value="OPVpr"> OPVpr</label>
+        <label class="ms-item"><input type="checkbox" value="OPVrep"> OPVrep</label>
+      </div>
+    </div>
+    <div class="ms-wrap" id="liniFilter">
+      <div class="ms-trigger" id="liniFilterTrigger">Semua Lini <span class="ms-arrow">&#9660;</span></div>
+      <div class="ms-panel" id="liniFilterPanel">
+        <label class="ms-item ms-reset"><input type="checkbox" value="__all__" checked> Semua Lini</label>
+        <hr class="ms-divider">
+      </div>
+    </div>
+    <div class="ms-wrap" id="monthFilter">
+      <div class="ms-trigger" id="monthFilterTrigger">Semua Bulan <span class="ms-arrow">&#9660;</span></div>
+      <div class="ms-panel" id="monthFilterPanel">
+        <label class="ms-item ms-reset"><input type="checkbox" value="__all__" checked> Semua Bulan</label>
+        <hr class="ms-divider">
+      </div>
+    </div>
     <div class="toolbar-actions">
       <button class="btn" id="exportBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
@@ -458,21 +506,8 @@
             <input type="text" id="fPic" placeholder="Penanggung jawab" />
           </div>
           <div class="field">
-            <label>Lini</label>
-            <select id="fLini">
-              <option value="">-- Pilih Lini --</option>
-              <option value="Solida 1">Solida 1</option>
-              <option value="Solida 2">Solida 2</option>
-              <option value="Liquid">Liquid</option>
-              <option value="Semi-solid">Semi-solid</option>
-              <option value="Sterile 1">Sterile 1</option>
-              <option value="Steril 2">Steril 2</option>
-              <option value="Sterile 3">Sterile 3</option>
-              <option value="Sterile 4">Sterile 4</option>
-              <option value="Sterile 5">Sterile 5</option>
-              <option value="Sterile 2 Ext">Sterile 2 Ext</option>
-              <option value="Sterile 3 Ext">Sterile 3 Ext</option>
-            </select>
+            <label>Lini <span style="font-weight:400;color:#94a3b8;font-size:11px;">(bisa pilih lebih dari 1)</span></label>
+            <div class="checkbox-group" id="fLiniGroup"></div>
           </div>
         </div>
         <div class="field">
@@ -640,19 +675,87 @@
     return new Date().toISOString().slice(0, 10);
   }
 
+  // ---------- multi-select ui logic ----------
+  function getMultiValues(containerId) {
+    var panel = document.getElementById(containerId + "Panel");
+    if (!panel) return [];
+    var checks = panel.querySelectorAll('input[type="checkbox"]:checked');
+    var vals = [];
+    checks.forEach(function(c) { vals.push(c.value); });
+    return vals;
+  }
+  
+  function setupMultiSelect(id, defaultText) {
+    var wrap = document.getElementById(id);
+    var trigger = document.getElementById(id + "Trigger");
+    var panel = document.getElementById(id + "Panel");
+    if (!wrap || !trigger || !panel) return;
+    
+    trigger.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var isOpen = panel.classList.contains("open");
+      document.querySelectorAll(".ms-panel").forEach(function(p) { p.classList.remove("open"); });
+      document.querySelectorAll(".ms-trigger").forEach(function(t) { t.classList.remove("active"); });
+      if (!isOpen) {
+        panel.classList.add("open");
+        trigger.classList.add("active");
+      }
+    });
+    
+    panel.addEventListener("change", function(e) {
+      if (e.target.type !== "checkbox") return;
+      var checks = panel.querySelectorAll('input[type="checkbox"]');
+      var allCheck = panel.querySelector('input[value="__all__"]');
+      
+      if (e.target.value === "__all__") {
+        if (e.target.checked) {
+          checks.forEach(function(c) { if(c !== allCheck) c.checked = false; });
+        } else {
+          e.target.checked = true; // prevent unchecking if nothing else selected
+        }
+      } else {
+        if (e.target.checked && allCheck) allCheck.checked = false;
+        
+        // if all unchecked, check "Semua"
+        var anyChecked = Array.from(checks).some(function(c) { return c.checked && c.value !== "__all__"; });
+        if (!anyChecked && allCheck) allCheck.checked = true;
+      }
+      
+      var selected = getMultiValues(id);
+      if (selected.includes("__all__")) {
+        trigger.innerHTML = defaultText + ' <span class="ms-arrow">&#9660;</span>';
+      } else {
+        trigger.innerHTML = selected.length + ' dipilih <span class="ms-arrow">&#9660;</span>';
+      }
+      
+      // trigger change event to re-render
+      var evt = new Event("change");
+      wrap.dispatchEvent(evt);
+    });
+  }
+  
+  document.addEventListener("click", function() {
+    document.querySelectorAll(".ms-panel").forEach(function(p) { p.classList.remove("open"); });
+    document.querySelectorAll(".ms-trigger").forEach(function(t) { t.classList.remove("active"); });
+  });
+
   // ---------- filtering ----------
   function getFiltered() {
     var search = document.getElementById("searchInput").value.trim().toLowerCase();
-    var statusFilter = document.getElementById("statusFilter").value;
-    var jenisFilter = document.getElementById("jenisFilter").value;
-    var liniFilter = document.getElementById("liniFilter") ? document.getElementById("liniFilter").value : "Semua";
-    var monthFilter = document.getElementById("monthFilter").value;
+    var statusVals = getMultiValues("statusFilter");
+    var jenisVals = getMultiValues("jenisFilter");
+    var liniVals = getMultiValues("liniFilter");
+    var monthVals = getMultiValues("monthFilter");
 
     return documents
-      .filter(function (d) { return statusFilter === "Semua" ? true : d.status === statusFilter; })
-      .filter(function (d) { return jenisFilter === "Semua" ? true : d.jenisDokumen === jenisFilter; })
-      .filter(function (d) { return liniFilter === "Semua" ? true : (d.lini || "") === liniFilter; })
-      .filter(function (d) { return monthFilter === "Semua" ? true : getMonthKey(d.tanggal) === monthFilter; })
+      .filter(function (d) { return statusVals.includes("__all__") ? true : statusVals.includes(d.status); })
+      .filter(function (d) { return jenisVals.includes("__all__") ? true : jenisVals.includes(d.jenisDokumen); })
+      .filter(function (d) { 
+        if (liniVals.includes("__all__")) return true;
+        var dLinis = Array.isArray(d.lini) ? d.lini : (d.lini ? [d.lini] : []);
+        return dLinis.some(function(l) { return liniVals.includes(l); });
+      })
+      .filter(function (d) { return monthVals.includes("__all__") ? true : monthVals.includes(getMonthKey(d.tanggal)); })
       .filter(function (d) {
         if (!search) return true;
         return (
@@ -686,13 +789,13 @@
   }
 
   function renderJenisSummary() {
-    var monthFilter = document.getElementById("monthFilter").value;
+    var monthVals = getMultiValues("monthFilter");
     var scoped = documents.filter(function (d) {
-      return monthFilter === "Semua" ? true : getMonthKey(d.tanggal) === monthFilter;
+      return monthVals.includes("__all__") ? true : monthVals.includes(getMonthKey(d.tanggal));
     });
 
     document.getElementById("jenisSummaryScope").textContent =
-      monthFilter === "Semua" ? "Semua Bulan" : getMonthLabel(monthFilter);
+      monthVals.includes("__all__") ? "Semua Bulan" : monthVals.map(getMonthLabel).join(", ");
 
     var jenisList = ["PRA", "OPVpr", "OPVrep"];
     var html = '<table class="jenis-summary-table"><thead><tr>' +
@@ -751,9 +854,14 @@
     var sel = document.getElementById("trendLiniSelect");
     if (!sel) return;
     var cur = sel.value;
-    var linis = Array.from(new Set(documents.map(function(d){ return (d.lini || "").trim(); }))).filter(Boolean).sort();
+    var linis = [];
+    documents.forEach(function(d) {
+      var dLinis = Array.isArray(d.lini) ? d.lini : (d.lini ? [d.lini] : []);
+      dLinis.forEach(function(l) { if (l && l.trim() && !linis.includes(l.trim())) linis.push(l.trim()); });
+    });
+    linis.sort();
     sel.innerHTML = '<option value="">Semua Lini</option>' +
-      linis.map(function(l){ return '<option value="' + l + '">' + l + '</option>'; }).join("");
+      linis.map(function(l){ return '<option value="' + escapeHtml(l) + '">' + escapeHtml(l) + '</option>'; }).join("");
     if (linis.indexOf(cur) !== -1) sel.value = cur;
   }
 
@@ -923,13 +1031,21 @@
 
 
   function renderMonthFilterOptions() {
-    var select = document.getElementById("monthFilter");
-    var current = select.value;
+    var panel = document.getElementById("monthFilterPanel");
+    if (!panel) return;
+    var currentVals = getMultiValues("monthFilter");
     var keys = Array.from(new Set(documents.map(function (d) { return getMonthKey(d.tanggal); })));
     keys.sort(function (a, b) { return b.localeCompare(a); });
-    select.innerHTML = '<option value="Semua">Semua Bulan</option>' +
-      keys.map(function (k) { return '<option value="' + k + '">' + escapeHtml(getMonthLabel(k)) + '</option>'; }).join("");
-    if (keys.indexOf(current) !== -1) select.value = current;
+    
+    var html = '<label class="ms-item ms-reset"><input type="checkbox" value="__all__"' + 
+               (currentVals.includes("__all__") || currentVals.length === 0 ? ' checked' : '') + '> Semua Bulan</label><hr class="ms-divider">';
+    
+    html += keys.map(function (k) { 
+      var chk = currentVals.includes(k) ? ' checked' : '';
+      return '<label class="ms-item"><input type="checkbox" value="' + k + '"' + chk + '> ' + escapeHtml(getMonthLabel(k)) + '</label>'; 
+    }).join("");
+    
+    panel.innerHTML = html;
   }
 
   var LINI_OPTIONS = [
@@ -939,18 +1055,34 @@
   ];
 
   function renderLiniFilterOptions() {
-    var select = document.getElementById("liniFilter");
-    if (!select) return;
-    var current = select.value;
+    var panel = document.getElementById("liniFilterPanel");
+    if (!panel) return;
+    var currentVals = getMultiValues("liniFilter");
     var list = LINI_OPTIONS.slice();
     documents.forEach(function (d) {
-      if (d.lini && d.lini.trim() && list.indexOf(d.lini.trim()) === -1) {
-        list.push(d.lini.trim());
-      }
+      var dLinis = Array.isArray(d.lini) ? d.lini : (d.lini ? [d.lini] : []);
+      dLinis.forEach(function(l) {
+        if (l && l.trim() && list.indexOf(l.trim()) === -1) list.push(l.trim());
+      });
     });
-    select.innerHTML = '<option value="Semua">Semua Lini</option>' +
-      list.map(function (k) { return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>'; }).join("");
-    if (list.indexOf(current) !== -1) select.value = current;
+    
+    var html = '<label class="ms-item ms-reset"><input type="checkbox" value="__all__"' + 
+               (currentVals.includes("__all__") || currentVals.length === 0 ? ' checked' : '') + '> Semua Lini</label><hr class="ms-divider">';
+               
+    html += list.map(function (l) { 
+      var chk = currentVals.includes(l) ? ' checked' : '';
+      return '<label class="ms-item"><input type="checkbox" value="' + escapeHtml(l) + '"' + chk + '> ' + escapeHtml(l) + '</label>'; 
+    }).join("");
+    
+    panel.innerHTML = html;
+    
+    // Also generate form checkboxes
+    var group = document.getElementById("fLiniGroup");
+    if (group && group.innerHTML === "") {
+      group.innerHTML = list.map(function(l) {
+        return '<label class="checkbox-item"><input type="checkbox" name="fLiniCb" value="'+escapeHtml(l)+'"> '+escapeHtml(l)+'</label>';
+      }).join("");
+    }
   }
 
   function statusSelectHtml(doc) {
@@ -996,7 +1128,10 @@
           "<tr>" +
           '<td><span class="nomor-tag mono">' + escapeHtml(doc.nomorDokumen) + "</span></td>" +
           '<td><span class="jenis-tag">' + escapeHtml(doc.jenisDokumen || "-") + "</span></td>" +
-          '<td>' + (doc.lini ? '<span class="lini-tag">' + escapeHtml(doc.lini) + "</span>" : '<span style="color:#cbd5e1;">-</span>') + "</td>" +
+          '<td>' + (function(l){
+            var arr = Array.isArray(l) ? l : (l ? [l] : []);
+            return arr.length ? arr.map(function(x){return '<span class="lini-tag">'+escapeHtml(x)+'</span>';}).join(' ') : '<span style="color:#cbd5e1;">-</span>';
+          })(doc.lini) + "</td>" +
           '<td class="judul-cell"><div class="title">' + escapeHtml(doc.judulDokumen) + "</div>" +
           (doc.keterangan ? '<div class="note">' + escapeHtml(doc.keterangan) + "</div>" : "") +
           "</td>" +
@@ -1019,7 +1154,10 @@
           '<div class="doc-card-top">' +
           '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
           '<span class="nomor-tag mono">' + escapeHtml(doc.nomorDokumen) + "</span>" +
-          (doc.lini ? '<span class="lini-tag">' + escapeHtml(doc.lini) + "</span>" : "") +
+          (function(l){
+            var arr = Array.isArray(l) ? l : (l ? [l] : []);
+            return arr.map(function(x){return '<span class="lini-tag">'+escapeHtml(x)+'</span>';}).join(' ');
+          })(doc.lini) +
           "</div>" +
           statusSelectHtml(doc) +
           "</div>" +
@@ -1077,7 +1215,8 @@
     document.getElementById("fStatus").value = "Drafting";
     document.getElementById("fTanggal").value = todayIso();
     document.getElementById("fPic").value = "";
-    document.getElementById("fLini").value = "";
+    var checks = document.querySelectorAll('input[name="fLiniCb"]');
+    checks.forEach(function(c) { c.checked = false; });
     document.getElementById("fKeterangan").value = "";
     document.getElementById("formModal").classList.add("open");
   }
@@ -1095,7 +1234,9 @@
     document.getElementById("fStatus").value = doc.status || "Drafting";
     document.getElementById("fTanggal").value = doc.tanggal || todayIso();
     document.getElementById("fPic").value = doc.pic || "";
-    document.getElementById("fLini").value = doc.lini || "";
+    var dLinis = Array.isArray(doc.lini) ? doc.lini : (doc.lini ? [doc.lini] : []);
+    var checks = document.querySelectorAll('input[name="fLiniCb"]');
+    checks.forEach(function(c) { c.checked = dLinis.includes(c.value); });
     document.getElementById("fKeterangan").value = doc.keterangan || "";
     document.getElementById("formModal").classList.add("open");
   }
@@ -1120,7 +1261,7 @@
       status: document.getElementById("fStatus").value,
       tanggal: document.getElementById("fTanggal").value,
       pic: document.getElementById("fPic").value.trim(),
-      lini: document.getElementById("fLini").value.trim(),
+      lini: Array.from(document.querySelectorAll('input[name="fLiniCb"]:checked')).map(function(c){return c.value;}),
       keterangan: document.getElementById("fKeterangan").value.trim(),
     };
 
@@ -1167,7 +1308,7 @@
         No: idx + 1,
         "Nomor Dokumen": d.nomorDokumen,
         "Jenis Dokumen": d.jenisDokumen,
-        Lini: d.lini || "-",
+        Lini: Array.isArray(d.lini) ? (d.lini.length ? d.lini.join(", ") : "-") : (d.lini || "-"),
         "Judul Dokumen": d.judulDokumen,
         Status: d.status,
         Tanggal: formatTanggal(d.tanggal),
@@ -1191,16 +1332,31 @@
     document.getElementById("loginForm").addEventListener("submit", handleLoginSubmit);
     document.getElementById("logoutBtn").addEventListener("click", handleLogout);
     document.getElementById("searchInput").addEventListener("input", renderContent);
-    document.getElementById("statusFilter").addEventListener("change", renderContent);
-    document.getElementById("jenisFilter").addEventListener("change", renderContent);
-    document.getElementById("liniFilter").addEventListener("change", renderContent);
+    
+    // Setup multi-select UI
+    setupMultiSelect("statusFilter", "Semua Status");
+    setupMultiSelect("jenisFilter", "Semua Jenis");
+    setupMultiSelect("liniFilter", "Semua Lini");
+    setupMultiSelect("monthFilter", "Semua Bulan");
+
+    // Add event listeners for multi-select wrappers
+    var filters = ["statusFilter", "jenisFilter", "liniFilter"];
+    filters.forEach(function(f) {
+      var el = document.getElementById(f);
+      if (el) el.addEventListener("change", renderContent);
+    });
+    
+    var monthEl = document.getElementById("monthFilter");
+    if (monthEl) {
+      monthEl.addEventListener("change", function () {
+        renderJenisSummary();
+        renderContent();
+      });
+    }
+
     document.getElementById("trendJenisSelect").addEventListener("change", renderTrendChart);
     document.getElementById("trendLiniSelect").addEventListener("change", renderTrendChart);
     document.getElementById("trendPicSelect").addEventListener("change", renderTrendChart);
-    document.getElementById("monthFilter").addEventListener("change", function () {
-      renderJenisSummary();
-      renderContent();
-    });
     document.getElementById("exportBtn").addEventListener("click", exportToExcel);
     document.getElementById("addBtn").addEventListener("click", openAddModal);
     document.getElementById("closeModalBtn").addEventListener("click", closeFormModal);
